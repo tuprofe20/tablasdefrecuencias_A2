@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TuProfe20 MathLab - Estadística Interactiva</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { fun: ['Nunito', 'sans-serif'] },
+                    colors: {
+                        cat0: '#f43f5e', // rose-500
+                        cat1: '#3b82f6', // blue-500
+                        cat2: '#eab308', // yellow-500
+                        cat3: '#10b981', // emerald-500
+                        cat4: '#8b5cf6', // violet-500
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { margin: 0; padding: 0; overflow: hidden; }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; border: 2px solid white; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* ESTILOS METÁLICOS VIBRANTES PARA CARTELES DE PREMIO */
+        .metallic-gold {
+            background: linear-gradient(135deg, #fef08a 0%, #eab308 40%, #fef08a 60%, #a16207 100%);
+            border: 4px solid #fef08a;
+            box-shadow: inset 0 0 25px rgba(255,255,255,0.9), 0 15px 45px rgba(234, 179, 8, 0.7);
+            color: #422006;
+        }
+        .metallic-silver {
+            background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 40%, #f8fafc 60%, #64748b 100%);
+            border: 4px solid #ffffff;
+            box-shadow: inset 0 0 25px rgba(255,255,255,0.9), 0 15px 45px rgba(148, 163, 184, 0.7);
+            color: #0f172a;
+        }
+        .metallic-celeste {
+            background: linear-gradient(135deg, #e0f2fe 0%, #38bdf8 40%, #e0f2fe 60%, #0369a1 100%);
+            border: 4px solid #bae6fd;
+            box-shadow: inset 0 0 25px rgba(255,255,255,0.9), 0 15px 45px rgba(56, 189, 248, 0.7);
+            color: #0c4a6e;
+        }
+        .metallic-text-gold { text-shadow: 1px 2px 0px rgba(255,255,255,0.6), -1px -1px 0px rgba(0,0,0,0.15); }
+        .metallic-text-silver { text-shadow: 1px 2px 0px rgba(255,255,255,0.8), -1px -1px 0px rgba(0,0,0,0.2); }
+        .metallic-text-celeste { text-shadow: 1px 2px 0px rgba(255,255,255,0.7), -1px -1px 0px rgba(0,0,0,0.15); }
+
+        @keyframes gradient-x { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+        .animate-gradient-x { background-size: 200% 200%; animation: gradient-x 10s ease infinite; }
+        
+        @keyframes floatUp { 0% { transform: translateY(100vh) rotate(0deg); } 100% { transform: translateY(-100vh) rotate(360deg); } }
+        @keyframes slideInRight { 0% { opacity: 0; transform: translateX(20px); } 100% { opacity: 1; transform: translateX(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes confettiExplosion { 0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 1; } 80% { opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0) rotate(var(--rot)); opacity: 0; } }
+        @keyframes jellyPop { 0% { transform: scale3d(.3, .3, .3); opacity: 0; } 20% { transform: scale3d(1.15, 1.15, 1.15); } 40% { transform: scale3d(.9, .9, .9); } 60% { transform: scale3d(1.05, 1.05, 1.05); opacity: 1; } 80% { transform: scale3d(.97, .97, .97); } 100% { transform: scale3d(1, 1, 1); opacity: 1; } }
+        @keyframes wiggle { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg) scale(1.08); } }
+        @keyframes robotFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes robotThinkTilt { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(8deg) translateY(-4px); } }
+        @keyframes robotJump { 0%, 100% { transform: translateY(0); } 30% { transform: translateY(-18px); } }
+        @keyframes robotTalkArmL { 0%, 100% { transform: rotate(45deg); } 50% { transform: rotate(100deg); } }
+        @keyframes robotTalkArmR { 0%, 100% { transform: rotate(-45deg); } 50% { transform: rotate(-100deg); } }
+        
+        .animate-floatUp { animation: floatUp linear infinite; }
+        .animate-slideInRight { animation: slideInRight 0.3s ease-out forwards; }
+        .animate-fadeIn { animation: fadeIn 0.35s ease-out forwards; }
+        .animate-confettiExplosion { animation: confettiExplosion 1.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .animate-jellyPop { animation: jellyPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .animate-wiggle { animation: wiggle 0.25s ease-in-out 3; }
+        .animate-robotFloat { animation: robotFloat 3s ease-in-out infinite; }
+        .animate-robotThinkTilt { animation: robotThinkTilt 2s ease-in-out infinite; }
+        .animate-robotJump { animation: robotJump 0.9s cubic-bezier(0.28, 0.84, 0.42, 1) infinite; }
+        .animate-robotTalkArmL { animation: robotTalkArmL 0.5s ease-in-out infinite; }
+        .animate-robotTalkArmR { animation: robotTalkArmR 0.5s ease-in-out infinite 0.1s; }
+
+        .pie-chart {
+            border-radius: 50%;
+            transition: background 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.1), 0 10px 25px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-violet-600 via-fuchsia-600 to-orange-500 animate-gradient-x text-slate-800 font-fun h-screen w-screen overflow-hidden">
+
+    <div id="app" class="h-full w-full flex flex-col p-2 sm:p-4 relative overflow-hidden">
+        <!-- Fondo Flotante Dinámico -->
+        <div id="floating-bg" class="absolute inset-0 overflow-hidden pointer-events-none z-0"></div>
+
+        <!-- Contenedor de Confeti -->
+        <div id="confetti-container" class="absolute inset-0 pointer-events-none z-[120] flex items-center justify-center overflow-hidden"></div>
+
+        <!-- HEADER GLOBAL VIBRANTE -->
+        <header class="shrink-0 relative z-20 w-full max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3 bg-white/20 backdrop-blur-md px-4 py-2.5 sm:px-6 sm:py-3 rounded-[2rem] border-2 border-white/40 shadow-xl mb-3">
+            <div class="flex items-center gap-3 w-full md:w-auto">
+                <div class="bg-gradient-to-br from-yellow-300 to-amber-500 p-2.5 rounded-2xl shadow-lg border-2 border-yellow-100 transform rotate-3 hover:rotate-0 transition-transform hidden sm:block cursor-pointer" onclick="AudioController.play('pop')">
+                    <i data-lucide="pie-chart" class="text-white w-6 h-6"></i>
+                </div>
+                <div class="flex-1 text-center md:text-left">
+                    <h1 class="text-xl sm:text-2xl font-black text-white drop-shadow-md flex items-center justify-center md:justify-start gap-2">
+                        Laboratorio <span class="bg-indigo-600/90 backdrop-blur-sm text-yellow-300 px-3 py-0.5 rounded-xl text-sm sm:text-base border-2 border-indigo-300 shadow-sm">Estadístico</span>
+                    </h1>
+                    <p class="text-[10px] sm:text-xs text-yellow-100 font-extrabold uppercase tracking-widest mt-0.5 drop-shadow">TuProfe20 MathLab</p>
+                </div>
+            </div>
+            
+            <div class="flex gap-3 items-center justify-center w-full md:w-auto">
+                <div class="flex items-center gap-2 bg-emerald-500/90 backdrop-blur-md px-4 py-1.5 rounded-xl border-2 border-emerald-200 text-white font-black shadow-lg">
+                    <i data-lucide="award" class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 fill-yellow-300"></i> <span id="score-display">0/8</span> Completados
+                </div>
+                <button onclick="toggleMute()" onmouseenter="AudioController.play('hover')" class="p-2 sm:p-2.5 rounded-xl bg-white/25 border-2 border-white/40 text-white hover:bg-white/40 transition-all hover:scale-110 active:scale-95 shadow-md">
+                    <i id="mute-icon" data-lucide="volume-2" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- MAIN CONTAINER -->
+        <main class="w-full max-w-7xl mx-auto flex-1 flex flex-col relative z-10 bg-white/15 backdrop-blur-xl rounded-[2.5rem] border-2 border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden">
+            
+            <!-- TOP NAV -->
+            <div id="top-nav" class="hidden w-full bg-white/25 backdrop-blur-md border-b-2 border-white/30 px-4 py-2.5 flex items-center justify-between shrink-0">
+                <button onclick="navBack()" onmouseenter="AudioController.play('hover')" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 border-b-[4px] border-indigo-800 text-white font-black text-xs sm:text-sm uppercase tracking-wider hover:bg-indigo-500 hover:-translate-y-0.5 active:translate-y-1 active:border-b-0 transition-all shadow-md">
+                    <i id="nav-icon" data-lucide="home" class="w-4 h-4"></i> <span id="nav-text">Salir</span>
+                </button>
+                <div id="reward-badge" class="hidden px-4 py-1.5 rounded-xl border-2 bg-white/90 border-indigo-200 text-indigo-900 shadow-md flex items-center gap-3">
+                    <div class="flex items-center gap-1.5 border-r-2 border-slate-200 pr-3">
+                        <i data-lucide="user" class="w-4 h-4 text-indigo-500"></i>
+                        <span id="nav-player-name" class="text-xs sm:text-sm font-black truncate max-w-[120px] uppercase"></span>
+                    </div>
+                    <span class="text-xs font-extrabold uppercase tracking-wider text-indigo-500 hidden sm:inline">Puntaje:</span>
+                    <span class="text-sm sm:text-base font-black flex items-center gap-1 text-amber-600">
+                        <i data-lucide="star" class="w-4 h-4 text-amber-500 fill-amber-500 animate-spin" style="animation-duration: 6s;"></i> 
+                        <span id="live-score-badge">1000</span> PTS
+                    </span>
+                </div>
+            </div>
+
+            <div class="flex-1 flex flex-col overflow-hidden relative">
+                
+                <!-- VIEW 1: MAP (PANEL DE 8 PRÁCTICAS) -->
+                <div id="view-map" class="flex-1 flex flex-col p-4 sm:p-6 md:p-8 overflow-y-auto relative custom-scrollbar">
+                    <div class="text-center mb-6">
+                        <h2 class="text-2xl sm:text-4xl font-black text-white drop-shadow-md uppercase tracking-wider">
+                            ✨ Ejercicios de Estadística ✨
+                        </h2>
+                        <p class="text-yellow-100 font-bold text-xs sm:text-sm mt-2">Escribe tu nombre en la tarjeta de tu actividad y haz clic en "¡ENTRAR AHORA!" para ganar tus 1,000 puntos.</p>
+                    </div>
+                    
+                    <div id="challenges-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8 w-full max-w-6xl mx-auto px-2">
+                        <!-- Tarjetas de desafío inyectadas por JS -->
+                    </div>
+
+                    <div class="flex justify-center pb-6 mt-auto">
+                        <button id="btn-report" onclick="showResult()" onmouseenter="AudioController.play('hover')" class="hidden metallic-gold px-8 py-4 rounded-2xl font-black text-lg sm:text-xl transition-all duration-300 flex items-center gap-3 hover:brightness-110 border-b-[6px] border-yellow-700 shadow-2xl active:border-b-0 active:translate-y-[6px] uppercase tracking-wider animate-bounce">
+                            <i data-lucide="award" class="w-7 h-7"></i> Ver Reporte Global <i data-lucide="sparkles" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- VIEW 2: CHALLENGE WORKSPACE -->
+                <div id="view-challenge" class="hidden flex-1 flex flex-col p-3 sm:p-4 relative overflow-y-auto w-full pb-6 bg-gradient-to-br from-indigo-600/30 to-fuchsia-600/30 custom-scrollbar">
+                    
+                    <div class="flex flex-col sm:flex-row items-center justify-between mb-3 bg-white/20 backdrop-blur-md border-2 border-white/40 shadow-lg p-3 sm:px-5 rounded-2xl gap-3 w-full max-w-7xl mx-auto">
+                        <div class="flex items-center gap-3 w-full sm:w-auto">
+                            <div class="text-center sm:text-left">
+                                <h4 id="challenge-enunciado" class="text-yellow-300 font-black uppercase text-[10px] sm:text-xs tracking-widest drop-shadow leading-snug break-words"></h4>
+                                <h2 id="challenge-title" class="text-base sm:text-xl font-black text-white uppercase tracking-wide drop-shadow-md"></h2>
+                            </div>
+                        </div>
+                        <div class="bg-indigo-900/60 border border-indigo-300/50 px-3 py-1.5 rounded-xl text-white text-[10px] sm:text-xs font-bold flex items-center gap-2 shrink-0">
+                            <i data-lucide="zap" class="w-4 h-4 text-rose-400 fill-rose-400"></i>
+                            <span>Meta: <strong>1000 PTS</strong> (-50 PTS por error)</span>
+                        </div>
+                    </div>
+
+                    <div id="challenge-workspace" class="flex-1 flex flex-col items-center w-full relative max-w-7xl mx-auto transition-all duration-500 opacity-100">
+                        <div class="flex flex-col xl:flex-row w-full gap-4 items-stretch flex-1">
+                            
+                            <!-- PANEL IZQUIERDO: Escáner / Quiz / Pie -->
+                            <div class="w-full xl:w-[46%] flex flex-col min-h-[36vh] xl:min-h-0">
+                                
+                                <!-- ETAPA 1: Matriz de Datos -->
+                                <div id="panel-matrix" class="bg-white/95 backdrop-blur-3xl p-4 sm:p-5 rounded-[2rem] border-4 border-white shadow-2xl flex flex-col h-full w-full relative overflow-hidden flex-1">
+                                    <div class="flex justify-between items-center mb-3 sm:mb-4">
+                                        <h4 class="text-indigo-600 font-black uppercase tracking-wider flex items-center gap-2 text-xs sm:text-sm bg-indigo-50 px-3.5 py-1.5 rounded-xl border-2 border-indigo-100">
+                                            <i data-lucide="grip" class="w-4 h-4 text-indigo-500"></i> Escáner de Datos
+                                        </h4>
+                                        <span id="matrix-n" class="bg-gradient-to-r from-amber-400 to-orange-500 text-white px-4 py-1.5 rounded-xl font-black shadow-md text-base sm:text-xl transform rotate-2"></span>
+                                    </div>
+                                    <div id="matrix-grid" class="grid gap-1.5 sm:gap-2 mb-1 flex-1 content-start z-10 h-full overflow-y-auto pr-1 custom-scrollbar">
+                                        <!-- Botones inyectados -->
+                                    </div>
+                                </div>
+
+                                <!-- ETAPA 2: Cuestionario -->
+                                <div id="panel-quiz" class="hidden bg-white/95 backdrop-blur-3xl p-5 sm:p-6 rounded-[2rem] border-4 border-white shadow-2xl flex flex-col h-full w-full relative overflow-y-auto custom-scrollbar flex-1 animate-slideInRight">
+                                    <h3 class="text-base sm:text-lg font-black text-indigo-600 mb-4 flex items-center gap-2.5 uppercase tracking-wider border-b-4 border-indigo-50 pb-3">
+                                        <i data-lucide="file-question" class="w-6 h-6 text-amber-500"></i> Preguntas de Análisis
+                                    </h3>
+                                    <div id="quiz-list" class="flex flex-col gap-3.5 flex-1">
+                                        <!-- Preguntas inyectadas -->
+                                    </div>
+                                </div>
+
+                                <!-- ETAPA 3: Gráfico Circular -->
+                                <div id="panel-pie" class="hidden bg-white/95 backdrop-blur-3xl p-5 sm:p-6 rounded-[2rem] border-4 border-white shadow-2xl flex flex-col h-full w-full relative overflow-y-auto custom-scrollbar flex-1 animate-slideInRight">
+                                    <h3 class="text-base sm:text-lg font-black text-indigo-600 mb-4 flex items-center gap-2.5 uppercase tracking-wider border-b-4 border-indigo-50 pb-3">
+                                        <i data-lucide="pie-chart" class="w-6 h-6 text-emerald-500"></i> Gráfico Circular
+                                    </h3>
+                                    <div class="flex-1 flex flex-col items-center justify-center gap-6">
+                                        <!-- Visualizador del Pie -->
+                                        <div class="relative w-40 h-40 sm:w-48 sm:h-48 pie-chart" id="pie-visualizer">
+                                            <div class="absolute inset-0 bg-white/10 rounded-full shadow-inner border border-white/50"></div>
+                                            <!-- Capa decorativa central para donas opcional, pero lo dejamos como pie -->
+                                        </div>
+                                        
+                                        <!-- Preguntas Pie -->
+                                        <div id="pie-quiz-list" class="flex flex-col gap-3.5 w-full">
+                                            <!-- Preguntas inyectadas -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- PANEL DERECHO: Tabla de Frecuencias -->
+                            <div class="w-full xl:w-[54%] flex flex-col">
+                                <div class="relative w-full h-full p-4 sm:p-5 bg-white/95 backdrop-blur-3xl border-4 border-white rounded-[2rem] shadow-2xl flex flex-col items-center">
+                                    <h3 class="text-base sm:text-lg font-black text-white uppercase tracking-widest mb-3 flex items-center justify-center gap-2.5 bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 px-6 py-2.5 rounded-2xl w-full text-center shadow-md">
+                                        <i data-lucide="table-2" class="text-yellow-300 w-5 h-5"></i> Tabla de Frecuencias
+                                    </h3>
+                                    <div class="w-full overflow-x-auto rounded-2xl border-2 border-slate-100 bg-white flex-1 flex flex-col shadow-inner custom-scrollbar relative">
+                                        <table class="w-full text-center border-collapse h-full min-w-[480px]">
+                                            <thead id="table-head"></thead>
+                                            <tbody id="table-body"></tbody>
+                                            <tfoot id="table-foot"></tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 3: RESULTADO GLOBAL -->
+                <div id="view-result" class="hidden flex-1 flex flex-col items-center justify-center p-4 sm:p-6 text-center relative overflow-y-auto h-full">
+                    <div id="result-modal" class="relative w-full max-w-2xl p-8 sm:p-12 rounded-[3rem] flex flex-col items-center justify-center shadow-2xl animate-jellyPop metallic-gold">
+                        <div class="absolute inset-0 rounded-[3rem] bg-gradient-to-tr from-white/0 via-white/50 to-white/0 opacity-60 pointer-events-none"></div>
+                        <i id="result-icon" data-lucide="award" class="relative z-10 w-20 h-20 sm:w-24 sm:h-24 text-yellow-900 mb-3 drop-shadow-lg"></i>
+                        <div class="relative z-10 bg-white/50 backdrop-blur-md border-2 border-white px-5 py-1.5 rounded-full mb-3 shadow-sm font-black text-xs sm:text-sm uppercase tracking-widest text-yellow-950">
+                            REPORTE FINAL DE LA CLASE
+                        </div>
+                        <h1 class="relative z-10 text-2xl sm:text-4xl font-black mb-6 uppercase tracking-wider break-words w-full metallic-text-gold text-yellow-950">ESTADÍSTICA INTERACTIVA</h1>
+                        
+                        <div class="relative z-10 bg-black/10 backdrop-blur-md border-2 border-yellow-700/30 shadow-inner p-6 sm:p-8 rounded-[2rem] mb-8 w-full transform -rotate-1">
+                            <h3 class="font-black uppercase tracking-widest mb-2 text-xs sm:text-sm text-yellow-950 border-b border-yellow-900/20 pb-2">PUNTAJE GLOBAL ACUMULADO POR TODOS</h3>
+                            <div class="flex flex-col sm:flex-row justify-center items-center sm:items-baseline gap-2 mt-3">
+                                <p id="result-score" class="text-5xl sm:text-7xl font-black drop-shadow-md text-yellow-950">0</p>
+                                <span class="text-xl sm:text-2xl font-black text-yellow-900/70">/ 8000 PUNTOS</span>
+                            </div>
+                        </div>
+                        <div class="relative z-10 flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
+                            <button onclick="downloadReport()" onmouseenter="AudioController.play('hover')" class="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 border-b-[6px] font-black text-sm sm:text-base rounded-2xl transition-all shadow-xl active:border-b-0 active:translate-y-[6px] uppercase tracking-wider hover:brightness-110 bg-slate-900 border-black text-yellow-400">
+                                <i data-lucide="download" class="w-5 h-5"></i> Descargar Reporte
+                            </button>
+                            <button onclick="resetGame()" onmouseenter="AudioController.play('hover')" class="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 bg-white/60 border-b-[6px] border-white font-black text-sm sm:text-base rounded-2xl transition-all shadow-lg active:border-b-0 active:translate-y-[6px] hover:bg-white/80 text-yellow-950 uppercase tracking-wider">
+                                <i data-lucide="rotate-ccw" class="w-5 h-5"></i> Reiniciar Laboratorio
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- FOOTER ROBOT ANIMADO Y COLORIDO -->
+            <footer class="shrink-0 bg-white/95 backdrop-blur-3xl w-full px-4 py-2.5 sm:px-8 sm:py-3.5 flex items-center gap-4 sm:gap-7 border-t-[4px] border-white z-20 shadow-[0_-10px_30px_rgba(0,0,0,0.15)]">
+                <div id="robot-container" onclick="pokeRobot()" class="shrink-0 absolute -top-16 sm:relative sm:-top-0 left-3 sm:left-0 drop-shadow-xl scale-90 sm:scale-100 relative flex flex-col items-center cursor-pointer hover:scale-110 transition-transform animate-robotFloat">
+                    <div class="relative z-0 flex flex-col items-center translate-y-1">
+                        <div id="robot-antenna" class="w-4 h-4 rounded-full shadow-[0_0_14px_currentColor] z-10 transition-colors duration-300 text-yellow-400 bg-yellow-400 animate-pulse border-2 border-white"></div>
+                        <div class="w-1.5 h-4 bg-indigo-400 rounded-full"></div>
+                    </div>
+                    <div class="relative z-10 w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-white via-indigo-50 to-indigo-200 rounded-[1.8rem] border-[4px] border-indigo-400 shadow-xl flex flex-col items-center justify-center p-2 transition-transform duration-300">
+                        <div class="w-full h-full bg-slate-900 rounded-2xl flex flex-col items-center justify-center p-1.5 shadow-inner border-2 border-indigo-500/40 relative overflow-hidden">
+                            <div id="robot-eyes" class="w-full flex justify-between px-2">
+                                <div class="w-4 h-4 bg-yellow-400 rounded-full animate-bounce shadow-[0_0_8px_#facc15]"></div>
+                                <div class="w-4 h-4 bg-yellow-400 rounded-full animate-bounce shadow-[0_0_8px_#facc15]"></div>
+                            </div>
+                            <div id="robot-mouth-wrap" class="mt-1.5 flex items-center justify-center">
+                                <div class="w-5 h-3.5 bg-rose-400 rounded-b-full animate-pulse shadow-[0_0_6px_#fb7185]"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="robot-arm-l" class="absolute top-1/2 -left-3 w-4 h-7 bg-amber-400 border-[3px] border-indigo-500 rounded-full z-0 origin-top transition-transform duration-300 animate-robotTalkArmL"></div>
+                    <div id="robot-arm-r" class="absolute top-1/2 -right-3 w-4 h-7 bg-amber-400 border-[3px] border-indigo-500 rounded-full z-0 origin-top transition-transform duration-300 animate-robotTalkArmR"></div>
+                </div>
+                
+                <div class="flex-1 text-sm sm:text-lg font-extrabold text-indigo-950 leading-snug ml-16 sm:ml-0 bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 p-3 sm:p-4 rounded-2xl border-2 border-indigo-200 min-h-[3.8rem] sm:min-h-[4.5rem] flex items-center shadow-inner relative">
+                    <div id="bot-msg-wrapper" class="animate-slideInRight w-full">
+                        <p id="bot-msg" class="text-indigo-900 drop-shadow-sm">
+                            ¡Hola! Soy tu asistente virtual. Haz clic en cualquier ejercicio del mapa para ingresar tu nombre y ganar hasta 1,000 puntos.
+                        </p>
+                    </div>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- MODAL DE INGRESO DE NOMBRE -->
+    <div id="modal-name" class="hidden fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div class="bg-white/95 backdrop-blur-3xl p-8 rounded-[3rem] border-4 border-white shadow-2xl max-w-md w-full text-center animate-jellyPop">
+            <div class="w-20 h-20 mx-auto bg-gradient-to-br from-indigo-500 to-violet-600 rounded-[2rem] flex items-center justify-center shadow-lg border-4 border-indigo-200 mb-5 transform rotate-3">
+                <i data-lucide="user-plus" class="w-10 h-10 text-white"></i>
+            </div>
+            <h3 class="text-2xl font-black text-indigo-900 mb-2 uppercase tracking-wider">Registro Rápido</h3>
+            <p class="text-sm font-bold text-slate-500 mb-6">¿Quién resolverá este ejercicio?</p>
+            <input id="input-modal-name" type="text" placeholder="Tu nombre..." oninput="AudioController.play('type')" onkeydown="if(event.key==='Enter') confirmNameEntry()"
+                class="w-full text-center text-xl font-black bg-slate-50 border-b-[4px] border-indigo-300 rounded-2xl py-3 px-4 text-indigo-900 placeholder-indigo-300 focus:outline-none focus:bg-white focus:border-amber-400 transition-all mb-6 shadow-inner uppercase" maxlength="15">
+            <div class="flex gap-3">
+                <button onclick="closeNameModal()" onmouseenter="AudioController.play('hover')" class="flex-1 py-3.5 rounded-2xl font-black text-sm bg-slate-200 text-slate-600 hover:bg-slate-300 transition-all border-b-[4px] border-slate-300 active:border-b-0 active:translate-y-[4px] uppercase">
+                    Cancelar
+                </button>
+                <button onclick="confirmNameEntry()" onmouseenter="AudioController.play('hover')" class="flex-[2] py-3.5 rounded-2xl font-black text-sm sm:text-base bg-gradient-to-r from-amber-400 to-orange-500 text-white hover:brightness-110 transition-all border-b-[4px] border-orange-600 active:border-b-0 active:translate-y-[4px] shadow-lg uppercase flex items-center justify-center gap-2">
+                    ¡A JUGAR! <i data-lucide="play" class="w-5 h-5 fill-current"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- OVERLAY DE NIVEL COMPLETADO -->
+    <div id="overlay-complete" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/70 backdrop-blur-md animate-fadeIn">
+        <div id="complete-glow" class="absolute inset-0 pointer-events-none z-0 flex items-center justify-center">
+            <div id="complete-glow-color" class="w-full h-full bg-yellow-400/25 animate-ping rounded-full blur-3xl max-w-xl max-h-xl"></div>
+        </div>
+        
+        <div id="complete-modal" class="w-full max-w-2xl p-6 sm:p-10 rounded-[3rem] flex flex-col items-center justify-center text-center animate-jellyPop overflow-y-auto shadow-2xl relative metallic-gold z-10">
+            <div class="absolute inset-0 rounded-[3rem] bg-gradient-to-tr from-white/0 via-white/40 to-white/0 opacity-70 pointer-events-none"></div>
+            
+            <div id="complete-badge" class="relative z-10 text-yellow-900 bg-white/50 border-yellow-200 px-6 py-2 rounded-full mb-4 border-2 shadow-sm backdrop-blur-sm">
+                <h4 id="complete-title" class="font-black uppercase tracking-widest flex items-center justify-center gap-2 text-base sm:text-xl metallic-text-gold text-yellow-900">
+                    <i data-lucide="award" class="w-6 h-6"></i> ¡DESAFÍO SUPERADO!
+                </h4>
+            </div>
+
+            <h2 id="complete-student-heading" class="relative z-10 text-3xl sm:text-5xl font-black mb-2 leading-tight uppercase metallic-text-gold text-yellow-950">
+                ¡Excelente, <span id="complete-name"></span>!
+            </h2>
+
+            <p id="complete-desc" class="relative z-10 text-sm sm:text-lg font-extrabold mb-6 uppercase tracking-wider text-yellow-900/90">
+                Completaste la tabla, el cuestionario y el gráfico.
+            </p>
+            
+            <div id="complete-score-box" class="relative z-10 px-8 py-4 rounded-[2rem] border-b-[6px] mb-8 shadow-2xl transform rotate-1 bg-white/70 border-white text-yellow-900">
+                <span class="text-xs sm:text-sm font-black uppercase tracking-widest block mb-1 opacity-80">Puntaje Obtenido</span>
+                <span id="complete-score" class="text-4xl sm:text-6xl font-black flex items-center justify-center gap-2">1000 PUNTOS</span>
+            </div>
+            
+            <button onclick="navBack()" onmouseenter="AudioController.play('hover')" id="complete-btn" class="relative z-10 px-8 py-4 font-black text-lg sm:text-xl rounded-2xl transition-all flex items-center gap-3 border-b-[6px] shadow-2xl active:border-b-0 active:translate-y-[6px] uppercase tracking-wider hover:brightness-110 bg-slate-900 border-black text-yellow-400">
+                Regresar al Mapa <i data-lucide="map" class="w-6 h-6"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Helper seguro para renderizar iconos sin bloquear la aplicación
+        function safeIcons() {
+            try {
+                if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                    window.lucide.createIcons();
+                }
+            } catch (e) {
+                console.warn("Lucide icons error:", e);
+            }
+        }
+
+        // ==========================================
+        // MOTOR DE AUDIO INTERACTIVO ENRIQUECIDO
+        // ==========================================
+        const AudioController = {
+            ctx: null, muted: false,
+            init: function() {
+                if (this.ctx) return;
+                try {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) this.ctx = new AudioContext();
+                } catch(e) { console.warn("Audio blocked"); }
+            },
+            play: function(type) {
+                try {
+                    this.init();
+                    if (this.muted || !this.ctx) return;
+                    if (this.ctx.state === 'suspended') this.ctx.resume();
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    const now = this.ctx.currentTime;
+
+                    if (type === 'hover') {
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(320, now);
+                        osc.frequency.exponentialRampToValueAtTime(420, now + 0.04);
+                        gain.gain.setValueAtTime(0.05, now);
+                        gain.gain.exponentialRampToValueAtTime(0.005, now + 0.04);
+                        osc.start(now); osc.stop(now + 0.04);
+                    } else if (type === 'type') {
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(500 + Math.random() * 150, now);
+                        gain.gain.setValueAtTime(0.08, now);
+                        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.03);
+                        osc.start(now); osc.stop(now + 0.03);
+                    } else if (type === 'pop' || type === 'correct') {
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(480, now);
+                        osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
+                        gain.gain.setValueAtTime(0.3, now);
+                        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+                        osc.start(now); osc.stop(now + 0.12);
+                    } else if (type === 'swoosh') {
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(280, now);
+                        osc.frequency.exponentialRampToValueAtTime(60, now + 0.18);
+                        gain.gain.setValueAtTime(0.25, now);
+                        gain.gain.linearRampToValueAtTime(0.01, now + 0.18);
+                        osc.start(now); osc.stop(now + 0.18);
+                    } else if (type === 'wrong') {
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(520, now);
+                        osc.frequency.exponentialRampToValueAtTime(200, now + 0.18);
+                        gain.gain.setValueAtTime(0.25, now);
+                        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
+                        osc.start(now); osc.stop(now + 0.18);
+                    } else if (type === 'levelUp') {
+                        osc.type = 'square';
+                        osc.frequency.setValueAtTime(440, now);
+                        osc.frequency.setValueAtTime(587.33, now + 0.1);
+                        osc.frequency.setValueAtTime(880, now + 0.2);
+                        osc.frequency.setValueAtTime(1174.66, now + 0.3);
+                        gain.gain.setValueAtTime(0.12, now);
+                        gain.gain.linearRampToValueAtTime(0, now + 0.55);
+                        osc.start(now); osc.stop(now + 0.55);
+                    } else if (type === 'win') {
+                        osc.disconnect();
+                        const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+                        notes.forEach((freq, i) => {
+                            const o = this.ctx.createOscillator();
+                            const g = this.ctx.createGain();
+                            o.type = 'triangle';
+                            o.frequency.value = freq;
+                            o.connect(g); g.connect(this.ctx.destination);
+                            const startTime = now + (i * 0.08);
+                            g.gain.setValueAtTime(0, startTime);
+                            g.gain.linearRampToValueAtTime(0.22, startTime + 0.04);
+                            g.gain.linearRampToValueAtTime(0, startTime + 0.45);
+                            o.start(startTime); o.stop(startTime + 0.45);
+                        });
+                    }
+                } catch (e) { console.warn("Audio play error", e); }
+            },
+            toggleMute: function() { this.muted = !this.muted; return this.muted; }
+        };
+
+        // Colores de CSS equivalentes en Hex para el SVG / Conic Gradient
+        const CAT_COLORS = ['#f43f5e', '#3b82f6', '#eab308', '#10b981', '#8b5cf6'];
+        const CAT_TAILWIND = ['text-rose-500', 'text-blue-500', 'text-yellow-500', 'text-emerald-500', 'text-violet-500'];
+
+        // ==========================================
+        // 8 EJERCICIOS EXACTOS CON DATOS 20, 25 o 50
+        // ==========================================
+        const CHALLENGES = [
+            {
+                id: 'ej_1', title: 'Mascotas en Casa', enunciado: 'Encuesta a 20 familias sobre la cantidad de mascotas.',
+                imageUrl: 'https://images.unsplash.com/photo-1543852786-1cf6624b9987?auto=format&fit=crop&w=600&q=80',
+                n: 20, points: 1000, 
+                categories: [{ label: '0 mascotas', raw: 0 }, { label: '1 mascota', raw: 1 }, { label: '2 mascotas', raw: 2 }, { label: '3 mascotas', raw: 3 }],
+                rawData: [1, 2, 0, 1, 3, 1, 2, 0, 1, 1, 2, 3, 0, 1, 2, 2, 1, 0, 1, 2], // 4, 8, 6, 2
+                correctTable: [{ fi: 4, hi: 0.20, p: 20 }, { fi: 8, hi: 0.40, p: 40 }, { fi: 6, hi: 0.30, p: 30 }, { fi: 2, hi: 0.10, p: 10 }],
+                angles: [72, 144, 108, 36],
+                quiz: [
+                    { q: '¿A cuántas familias se encuestó en total?', a: 20 },
+                    { q: '¿Cuántas familias tienen exactamente 1 mascota?', a: 8 },
+                    { q: '¿Qué porcentaje representa a las familias con 2 mascotas?', a: 30 },
+                    { q: '¿Cuántas familias no tienen ninguna mascota?', a: 4 }
+                ],
+                pieQuiz: [
+                    { q: 'Calcula cuántos grados mide el sector correspondiente a "0 mascotas".', a: 72, catIdx: 0 },
+                    { q: 'Calcula cuántos grados mide el sector de "1 mascota".', a: 144, catIdx: 1 }
+                ]
+            },
+            {
+                id: 'ej_2', title: 'Horas de Videojuegos', enunciado: 'Horas semanales que 25 niños juegan videojuegos.',
+                imageUrl: 'https://images.unsplash.com/photo-1580234811497-9df7fd2f357e?auto=format&fit=crop&w=600&q=80',
+                n: 25, points: 1000,
+                categories: [{ label: '1 hora', raw: 1 }, { label: '2 horas', raw: 2 }, { label: '3 horas', raw: 3 }, { label: '4 horas', raw: 4 }, { label: '5 horas', raw: 5 }],
+                rawData: [3, 2, 4, 1, 5, 2, 3, 3, 2, 4, 1, 2, 5, 3, 4, 2, 1, 3, 3, 2, 4, 5, 2, 3, 4], // 3, 6, 8, 5, 3
+                correctTable: [{ fi: 3, hi: 0.12, p: 12 }, { fi: 6, hi: 0.24, p: 24 }, { fi: 8, hi: 0.32, p: 32 }, { fi: 5, hi: 0.20, p: 20 }, { fi: 3, hi: 0.12, p: 12 }],
+                angles: [43.2, 86.4, 115.2, 72, 43.2],
+                quiz: [
+                    { q: '¿Cuántos niños juegan exactamente 3 horas?', a: 8 },
+                    { q: '¿Qué porcentaje de niños juega 2 horas?', a: 24 },
+                    { q: '¿Cuántos niños juegan 5 horas semanales?', a: 3 },
+                    { q: '¿Qué porcentaje juega 4 horas?', a: 20 }
+                ],
+                pieQuiz: [
+                    { q: 'Halla el ángulo en grados para el sector de "4 horas".', a: 72, catIdx: 3 },
+                    { q: 'Halla el ángulo en grados para el sector de "3 horas".', a: 115.2, catIdx: 2 }
+                ]
+            },
+            {
+                id: 'ej_3', title: 'Ahorros para el Paseo', enunciado: 'Dinero ahorrado en soles (S/.) por 50 estudiantes de sexto grado.',
+                imageUrl: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&w=600&q=80',
+                n: 50, points: 1000,
+                categories: [{ label: 'S/. 10', raw: 10 }, { label: 'S/. 20', raw: 20 }, { label: 'S/. 30', raw: 30 }, { label: 'S/. 40', raw: 40 }],
+                rawData: [10, 20, 30, 10, 40, 20, 30, 30, 20, 10, 30, 40, 20, 30, 10, 20, 30, 10, 20, 30, 30, 20, 10, 30, 40, 20, 30, 20, 10, 30, 10, 20, 30, 30, 20, 10, 30, 40, 20, 30, 30, 20, 10, 30, 20, 30, 40, 20, 30, 10], // 10, 15, 20, 5
+                correctTable: [{ fi: 10, hi: 0.20, p: 20 }, { fi: 15, hi: 0.30, p: 30 }, { fi: 20, hi: 0.40, p: 40 }, { fi: 5, hi: 0.10, p: 10 }],
+                angles: [72, 108, 144, 36],
+                quiz: [
+                    { q: '¿Qué porcentaje de niños logró ahorrar S/. 30?', a: 40 },
+                    { q: '¿Cuántos niños ahorraron S/. 20?', a: 15 },
+                    { q: '¿Cuántos niños lograron el ahorro máximo (S/. 40)?', a: 5 },
+                    { q: '¿Qué porcentaje ahorró S/. 10?', a: 20 }
+                ],
+                pieQuiz: [
+                    { q: '¿Cuál es la medida en grados del sector para "S/. 20"?', a: 108, catIdx: 1 },
+                    { q: '¿Cuál es la medida en grados del sector para "S/. 40"?', a: 36, catIdx: 3 }
+                ]
+            },
+            {
+                id: 'ej_4', title: 'Libros Leídos', enunciado: 'Cantidad de libros leídos durante las vacaciones por 20 estudiantes.',
+                imageUrl: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=600&q=80',
+                n: 20, points: 1000,
+                categories: [{ label: '0 libros', raw: 0 }, { label: '1 libro', raw: 1 }, { label: '2 libros', raw: 2 }, { label: '3 libros', raw: 3 }],
+                rawData: [1, 2, 0, 1, 3, 2, 2, 1, 0, 1, 2, 2, 3, 1, 2, 2, 1, 1, 2, 3], // 2, 7, 8, 3
+                correctTable: [{ fi: 2, hi: 0.10, p: 10 }, { fi: 7, hi: 0.35, p: 35 }, { fi: 8, hi: 0.40, p: 40 }, { fi: 3, hi: 0.15, p: 15 }],
+                angles: [36, 126, 144, 54],
+                quiz: [
+                    { q: '¿Cuántos alumnos leyeron exactamente 2 libros?', a: 8 },
+                    { q: '¿Qué porcentaje no leyó ningún libro (0 libros)?', a: 10 },
+                    { q: '¿Cuántos alumnos leyeron 3 libros?', a: 3 },
+                    { q: '¿Qué porcentaje leyó 1 libro?', a: 35 }
+                ],
+                pieQuiz: [
+                    { q: 'Calcula el ángulo en grados para los que leyeron "0 libros".', a: 36, catIdx: 0 },
+                    { q: 'Calcula el ángulo en grados para los que leyeron "2 libros".', a: 144, catIdx: 2 }
+                ]
+            },
+            {
+                id: 'ej_5', title: 'Minutos de Lectura', enunciado: 'Minutos diarios dedicados a la lectura por 25 niños.',
+                imageUrl: 'https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?auto=format&fit=crop&w=600&q=80',
+                n: 25, points: 1000,
+                categories: [{ label: '15 min', raw: 15 }, { label: '20 min', raw: 20 }, { label: '30 min', raw: 30 }, { label: '45 min', raw: 45 }, { label: '60 min', raw: 60 }],
+                rawData: [30, 15, 45, 20, 30, 30, 20, 60, 15, 30, 45, 20, 30, 15, 60, 20, 30, 45, 30, 15, 30, 20, 45, 30, 30], // 4, 5, 10, 4, 2
+                correctTable: [{ fi: 4, hi: 0.16, p: 16 }, { fi: 5, hi: 0.20, p: 20 }, { fi: 10, hi: 0.40, p: 40 }, { fi: 4, hi: 0.16, p: 16 }, { fi: 2, hi: 0.08, p: 8 }],
+                angles: [57.6, 72, 144, 57.6, 28.8],
+                quiz: [
+                    { q: '¿Cuántos niños leen exactamente 30 minutos?', a: 10 },
+                    { q: '¿Qué porcentaje lee 20 minutos diarios?', a: 20 },
+                    { q: '¿Cuántos niños leen durante 1 hora (60 minutos)?', a: 2 },
+                    { q: '¿Qué porcentaje dedica 15 minutos a la lectura?', a: 16 }
+                ],
+                pieQuiz: [
+                    { q: 'Halla el ángulo para el sector de "20 minutos".', a: 72, catIdx: 1 },
+                    { q: 'Halla el ángulo para el sector de "60 minutos".', a: 28.8, catIdx: 4 }
+                ]
+            },
+            {
+                id: 'ej_6', title: 'Caramelos por Bolsa', enunciado: 'Cantidad de caramelos en 50 bolsitas de sorpresa.',
+                imageUrl: 'https://images.unsplash.com/photo-1575224300306-1b8da36134ec?auto=format&fit=crop&w=600&q=80',
+                n: 50, points: 1000,
+                categories: [{ label: '18 car.', raw: 18 }, { label: '19 car.', raw: 19 }, { label: '20 car.', raw: 20 }, { label: '21 car.', raw: 21 }, { label: '22 car.', raw: 22 }],
+                rawData: [20, 19, 21, 18, 22, 20, 20, 19, 21, 20, 18, 20, 19, 20, 22, 21, 20, 19, 20, 18, 20, 21, 19, 20, 20, 22, 20, 19, 21, 20, 18, 20, 19, 20, 21, 20, 19, 20, 22, 21, 20, 19, 20, 18, 21, 20, 19, 21, 20, 22], // 5, 10, 20, 10, 5
+                correctTable: [{ fi: 5, hi: 0.10, p: 10 }, { fi: 10, hi: 0.20, p: 20 }, { fi: 20, hi: 0.40, p: 40 }, { fi: 10, hi: 0.20, p: 20 }, { fi: 5, hi: 0.10, p: 10 }],
+                angles: [36, 72, 144, 72, 36],
+                quiz: [
+                    { q: '¿Qué porcentaje de bolsas tiene 20 caramelos?', a: 40 },
+                    { q: '¿Cuántas bolsas tienen solo 18 caramelos?', a: 5 },
+                    { q: '¿Cuántas bolsas tienen 19 caramelos?', a: 10 },
+                    { q: '¿Qué porcentaje de bolsas tiene 21 caramelos?', a: 20 }
+                ],
+                pieQuiz: [
+                    { q: '¿Cuál es el ángulo del sector para "18 caramelos"?', a: 36, catIdx: 0 },
+                    { q: '¿Cuál es el ángulo del sector para "20 caramelos"?', a: 144, catIdx: 2 }
+                ]
+            },
+            {
+                id: 'ej_7', title: 'Cantidad de Hermanos', enunciado: 'Se preguntó a 20 estudiantes de 5to grado cuántos hermanos tienen.',
+                imageUrl: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=600&q=80',
+                n: 20, points: 1000,
+                categories: [{ label: '0 hermanos', raw: 0 }, { label: '1 hermano', raw: 1 }, { label: '2 hermanos', raw: 2 }, { label: '3 hermanos', raw: 3 }],
+                rawData: [1, 0, 2, 1, 3, 0, 1, 2, 1, 0, 1, 2, 0, 1, 2, 3, 1, 0, 1, 2], // 5, 8, 5, 2
+                correctTable: [{ fi: 5, hi: 0.25, p: 25 }, { fi: 8, hi: 0.40, p: 40 }, { fi: 5, hi: 0.25, p: 25 }, { fi: 2, hi: 0.10, p: 10 }],
+                angles: [90, 144, 90, 36],
+                quiz: [
+                    { q: '¿Cuántos alumnos tienen exactamente 1 hermano?', a: 8 },
+                    { q: '¿Qué porcentaje es hijo único (0 hermanos)?', a: 25 },
+                    { q: '¿Cuántos alumnos tienen 3 hermanos?', a: 2 },
+                    { q: '¿Qué porcentaje tiene 2 hermanos?', a: 25 }
+                ],
+                pieQuiz: [
+                    { q: 'Calcula el ángulo en grados para el sector "0 hermanos".', a: 90, catIdx: 0 },
+                    { q: 'Calcula el ángulo en grados para el sector "1 hermano".', a: 144, catIdx: 1 }
+                ]
+            },
+            {
+                id: 'ej_8', title: 'Talla de Zapatillas', enunciado: 'Registro de la talla de zapatillas de 25 estudiantes.',
+                imageUrl: 'https://images.unsplash.com/photo-1514989940723-e8e51635b782?auto=format&fit=crop&w=600&q=80',
+                n: 25, points: 1000,
+                categories: [{ label: 'Talla 33', raw: 33 }, { label: 'Talla 34', raw: 34 }, { label: 'Talla 35', raw: 35 }, { label: 'Talla 36', raw: 36 }],
+                rawData: [34, 35, 36, 33, 34, 34, 35, 33, 36, 34, 35, 34, 33, 36, 34, 35, 34, 35, 36, 34, 35, 33, 36, 34, 35], // 4, 9, 7, 5
+                correctTable: [{ fi: 4, hi: 0.16, p: 16 }, { fi: 9, hi: 0.36, p: 36 }, { fi: 7, hi: 0.28, p: 28 }, { fi: 5, hi: 0.20, p: 20 }],
+                angles: [57.6, 129.6, 100.8, 72],
+                quiz: [
+                    { q: '¿Qué porcentaje de niños calza talla 34?', a: 36 },
+                    { q: '¿Cuántos niños calzan la mayor talla (36)?', a: 5 },
+                    { q: '¿Cuántos niños calzan talla 35?', a: 7 },
+                    { q: '¿Qué porcentaje de niños calza talla 33?', a: 16 }
+                ],
+                pieQuiz: [
+                    { q: '¿Cuántos grados mide el sector de la "talla 36"?', a: 72, catIdx: 3 },
+                    { q: '¿Cuántos grados mide el sector de la "talla 35"?', a: 100.8, catIdx: 2 }
+                ]
+            }
+        ];
+
+        let state = {
+            view: 'map', playerName: '',
+            completedChallenges: [], gameScores: {}, 
+            currentChallengeIdx: 0, pendingChallengeIdx: null,
+            botMsg: "¡Hola! Soy tu asistente virtual. Haz clic en cualquier ejercicio del mapa para ingresar tu nombre y ganar hasta 1,000 puntos.",
+            botThinking: false, botHappy: false, botTalking: true,
+            currentPhase: 'table', // 'table', 'quiz', 'pie'
+            tableState: [], activeCell: {r:0, c:''}, foundItems: [], 
+            inputValue: "", cellError: null, 
+            quizAnswers: [], quizStatus: [], 
+            pieRevealed: [], pieAnswers: [], pieStatus: [],
+            gameScore: 1000
+        };
+
+        // Utilidad
+        const checkValueMatch = (inputStr, expectedNum) => {
+            const clean = String(inputStr).replace('%', '').replace('°', '').replace(',', '.').trim();
+            const inputVal = parseFloat(clean);
+            if (isNaN(inputVal)) return false;
+            return Math.abs(inputVal - expectedNum) <= 0.05; // margen de error pequeño
+        };
+
+        // Generar Fondo Flotante Dinámico
+        function initFloatingBackground() {
+            const symbols = ['📊', '📉', '📋', '∑', '%', 'fi', 'hi', '✨', '🧠', '🎯', '⭐', '1000', '°'];
+            const container = document.getElementById('floating-bg');
+            container.innerHTML = '';
+            for (let i = 0; i < 32; i++) {
+                const el = document.createElement('div');
+                el.className = "absolute text-white font-black animate-floatUp select-none drop-shadow-lg";
+                el.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                el.style.left = `${Math.random() * 100}%`;
+                el.style.bottom = '-15%';
+                el.style.fontSize = `${1.2 + Math.random() * 2.5}rem`;
+                el.style.opacity = `${0.12 + Math.random() * 0.22}`;
+                el.style.animationDuration = `${10 + Math.random() * 14}s`;
+                el.style.animationDelay = `-${Math.random() * 20}s`;
+                container.appendChild(el);
+            }
+        }
+
+        function pokeRobot() {
+            AudioController.play('levelUp');
+            setBotState(`¡Vamos con todo! Concéntrate, la estadística es muy divertida.`, false, true, true);
+        }
+
+        function setBotState(msg, isThinking=false, isHappy=false, isTalking=true) {
+            state.botMsg = msg;
+            
+            const container = document.getElementById('robot-container');
+            const antenna = document.getElementById('robot-antenna');
+            const eyes = document.getElementById('robot-eyes');
+            const mouthWrap = document.getElementById('robot-mouth-wrap');
+            const armL = document.getElementById('robot-arm-l');
+            const armR = document.getElementById('robot-arm-r');
+            
+            container.className = `shrink-0 absolute -top-16 sm:relative sm:-top-0 left-3 sm:left-0 drop-shadow-xl scale-90 sm:scale-100 relative flex flex-col items-center cursor-pointer hover:scale-110 transition-transform ${isThinking ? 'animate-robotThinkTilt' : isHappy ? 'animate-robotJump' : 'animate-robotFloat'}`;
+            
+            antenna.className = `w-4 h-4 rounded-full shadow-[0_0_14px_currentColor] z-10 transition-colors duration-300 border-2 border-white ${isHappy ? 'text-emerald-400 bg-emerald-400' : isThinking ? 'text-amber-500 bg-amber-500 animate-ping' : 'text-yellow-400 bg-yellow-400 animate-pulse'}`;
+            
+            armL.className = `absolute top-1/2 -left-3 w-4 h-7 bg-amber-400 border-[3px] border-indigo-500 rounded-full z-0 origin-top transition-transform duration-300 ${isThinking ? 'rotate-[135deg]' : isHappy ? 'rotate-[150deg] animate-pulse' : isTalking ? 'animate-robotTalkArmL' : 'rotate-45'}`;
+            armR.className = `absolute top-1/2 -right-3 w-4 h-7 bg-amber-400 border-[3px] border-indigo-500 rounded-full z-0 origin-top transition-transform duration-300 ${isThinking ? '-rotate-45' : isHappy ? '-rotate-[150deg] animate-pulse' : isTalking ? 'animate-robotTalkArmR' : '-rotate-45'}`;
+
+            if (isThinking) {
+                eyes.innerHTML = '<div class="w-3.5 h-1.5 bg-amber-400 rounded-full mt-2 rotate-[18deg]"></div><div class="w-3.5 h-1.5 bg-amber-400 rounded-full mt-2 -rotate-[18deg]"></div>';
+                mouthWrap.innerHTML = '<div class="w-3 h-3 bg-amber-300 rounded-full mt-1.5 translate-x-1"></div>';
+            } else if (isHappy) {
+                eyes.innerHTML = '<div class="w-4 h-2.5 bg-emerald-400 rounded-t-full mt-1 shadow-[0_0_8px_#34d399]"></div><div class="w-4 h-2.5 bg-emerald-400 rounded-t-full mt-1 shadow-[0_0_8px_#34d399]"></div>';
+                mouthWrap.innerHTML = '<div class="w-7 h-4 bg-rose-400 rounded-b-full mt-1 shadow-[0_0_8px_#fb7185]"></div>';
+            } else {
+                eyes.innerHTML = '<div class="w-4 h-4 bg-yellow-400 rounded-full animate-bounce shadow-[0_0_8px_#facc15]"></div><div class="w-4 h-4 bg-yellow-400 rounded-full animate-bounce shadow-[0_0_8px_#facc15]"></div>';
+                mouthWrap.innerHTML = '<div class="w-5 h-3.5 bg-rose-400 rounded-b-full animate-pulse shadow-[0_0_6px_#fb7185]"></div>';
+            }
+
+            const msgEl = document.getElementById('bot-msg');
+            const msgWrap = document.getElementById('bot-msg-wrapper');
+            msgEl.innerText = msg;
+            msgEl.className = (msg.includes('Ups') || msg.includes('descontado')) ? 'text-rose-600 drop-shadow-sm font-black' : 'text-indigo-950 drop-shadow-sm';
+            
+            msgWrap.classList.remove('animate-slideInRight');
+            void msgWrap.offsetWidth;
+            msgWrap.classList.add('animate-slideInRight');
+        }
+
+        function toggleMute() {
+            const muted = AudioController.toggleMute();
+            const icon = document.getElementById('mute-icon');
+            if (icon) icon.setAttribute('data-lucide', muted ? 'volume-x' : 'volume-2');
+            safeIcons();
+        }
+
+        function changeView(newView) {
+            ['map', 'challenge', 'result'].forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                if (el) el.classList.add('hidden');
+            });
+            const target = document.getElementById(`view-${newView}`);
+            if (target) target.classList.remove('hidden');
+            state.view = newView;
+
+            if (newView === 'challenge') {
+                document.getElementById('top-nav').classList.remove('hidden');
+                document.getElementById('nav-text').innerText = 'Volver al Mapa';
+                document.getElementById('reward-badge').classList.remove('hidden');
+                document.getElementById('nav-player-name').innerText = state.playerName;
+            } else {
+                document.getElementById('top-nav').classList.add('hidden');
+                document.getElementById('reward-badge').classList.add('hidden');
+            }
+
+            if(newView === 'map') renderMap();
+            if(newView === 'challenge') renderChallenge();
+            
+            safeIcons();
+        }
+
+        function navBack() {
+            AudioController.play('swoosh');
+            document.getElementById('overlay-complete').classList.add('hidden');
+            document.getElementById('confetti-container').innerHTML = '';
+            changeView('map');
+            setBotState("¡Hola! Escribe tu nombre en cualquiera de las 8 tarjetas y dale a '¡ENTRAR AHORA!' para resolver.", false, false, true);
+        }
+
+        // ==========================================
+        // VISTA MAPA CON ACCESO DIRECTO EN TARJETA
+        // ==========================================
+        function renderMap() {
+            const grid = document.getElementById('challenges-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            
+            CHALLENGES.forEach((c, i) => {
+                const isCompleted = state.completedChallenges.includes(c.id);
+                const scoreData = state.gameScores[c.id];
+                const isPerfect = isCompleted && scoreData && scoreData.score === 1000;
+                
+                const card = document.createElement('div');
+                let cardStyle = 'bg-white/95 border-white/80 hover:bg-white shadow-xl';
+                if (isCompleted) {
+                    cardStyle = isPerfect 
+                        ? 'metallic-gold shadow-[0_0_30px_rgba(250,204,21,0.8)]' 
+                        : 'metallic-celeste shadow-[0_0_25px_rgba(56,189,248,0.6)]';
+                }
+
+                card.className = `flex flex-col items-stretch rounded-[2rem] p-0 transition-all duration-300 text-left relative overflow-hidden group border-[4px] backdrop-blur-xl ${cardStyle}`;
+                
+                card.innerHTML = `
+                    <div class="w-full h-28 sm:h-32 relative shrink-0 overflow-hidden cursor-pointer" onclick="startActivityDirect(${i})">
+                        <img src="${c.imageUrl}" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all group-hover:scale-105 duration-500" onerror="this.src='https://placehold.co/600x400/4f46e5/ffffff?text=Actividad+${i+1}'" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-indigo-950/90 via-indigo-950/20 to-transparent"></div>
+                        <span class="absolute top-2.5 left-2.5 bg-indigo-600/95 text-yellow-300 font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-full border border-indigo-300 shadow-lg">Actividad ${i+1} • n=${c.n}</span>
+                        <div class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-xl flex items-center justify-center shadow-lg font-black text-xs border-2 border-white/70 ${isCompleted ? (isPerfect ? 'bg-yellow-400 text-yellow-950 animate-bounce' : 'bg-sky-400 text-sky-950') : 'bg-amber-400 text-indigo-950'}">
+                            ${isCompleted ? (isPerfect ? '🏆 1000 PTS' : `⭐ ${scoreData.score} PTS`) : '▶ JUGAR'}
+                        </div>
+                        <h3 class="absolute bottom-2 left-3 right-3 text-sm sm:text-base font-black leading-tight text-white drop-shadow-md truncate">${c.title}</h3>
+                    </div>
+                    <div class="p-3.5 sm:p-4 flex flex-col flex-1 relative z-10 w-full justify-between gap-2.5">
+                        <p class="text-[11px] sm:text-xs ${isCompleted ? (isPerfect ? 'text-yellow-950' : 'text-sky-950') : 'text-slate-600'} font-extrabold leading-snug">${c.enunciado}</p>
+                        
+                        ${isCompleted ? `
+                            <div class="${isPerfect ? 'bg-yellow-300/90 border-yellow-600 text-yellow-950' : 'bg-sky-200/95 border-sky-500 text-sky-950'} border-2 rounded-2xl p-2.5 text-center shadow-inner">
+                                <p class="text-[10px] font-black uppercase tracking-wider">${isPerfect ? '🌟 ¡EXCELENTE! PUNTAJE PERFECTO 🌟' : '💪 ¡VAMOS, TÚ PUEDES, INTÉNTALO!'}</p>
+                                <p class="text-xs sm:text-sm font-black truncate mt-0.5">${scoreData.player}: ${scoreData.score} PUNTOS</p>
+                            </div>
+                        ` : `
+                            <div class="bg-amber-100/90 border-2 border-amber-300 rounded-xl p-1.5 flex items-center justify-center gap-1.5 w-full">
+                                <span class="font-black text-[11px] text-amber-900">🎯 Premio Meta: 1,000 PUNTOS</span>
+                            </div>
+                        `}
+
+                        <div class="mt-auto pt-1 flex flex-col gap-2">
+                            <input id="card-name-${i}" type="text" value="${scoreData ? scoreData.player : ''}" placeholder="Escribe tu nombre aquí..." 
+                                onclick="event.stopPropagation()" onkeydown="if(event.key==='Enter') startActivityDirect(${i})"
+                                class="w-full text-center text-xs sm:text-sm font-black bg-white border-2 border-indigo-300 rounded-xl py-2 px-3 text-indigo-950 placeholder-indigo-400 focus:outline-none focus:border-amber-500 shadow-inner uppercase" maxlength="16">
+                            <button type="button" onclick="startActivityDirect(${i})" 
+                                class="w-full py-2.5 px-4 rounded-xl font-black text-xs sm:text-sm uppercase tracking-wider text-white bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 hover:brightness-110 active:translate-y-0.5 shadow-lg border-b-[4px] border-indigo-900 flex items-center justify-center gap-1.5 cursor-pointer">
+                                <span>${isCompleted ? '🔄 VOLVER A INTENTAR' : '🚀 ¡ENTRAR AHORA!'}</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            document.getElementById('score-display').innerText = `${state.completedChallenges.length}/8`;
+            if(state.completedChallenges.length > 0) document.getElementById('btn-report').classList.remove('hidden');
+            else document.getElementById('btn-report').classList.add('hidden');
+            safeIcons();
+        }
+
+        // Entrada directa sin bloqueos
+        function startActivityDirect(idx) {
+            AudioController.play('levelUp');
+            const inputEl = document.getElementById(`card-name-${idx}`);
+            let playerName = inputEl ? inputEl.value.trim() : '';
+            if (!playerName) {
+                playerName = `Estudiante ${idx + 1}`;
+            }
+            state.playerName = playerName;
+            state.currentChallengeIdx = idx;
+            initChallenge();
+            changeView('challenge');
+            setBotState(`¡Bienvenido(a) ${playerName}! Empecemos completando la Tabla de Frecuencias con el Escáner de Datos.`, false, true);
+        }
+
+        function handleChallengeClick(idx) {
+            startActivityDirect(idx);
+        }
+
+        // ==========================================
+        // VISTA DEL DESAFÍO
+        // ==========================================
+        function initChallenge() {
+            const c = CHALLENGES[state.currentChallengeIdx];
+            state.tableState = c.correctTable.map(row => ({ fi: "", hi: "", p: "" }));
+            state.activeCell = {r: 0, c: 'fi'};
+            state.foundItems = []; 
+            state.inputValue = ""; state.cellError = null;
+            state.currentPhase = 'table';
+            state.quizAnswers = Array(c.quiz.length).fill(''); 
+            state.quizStatus = Array(c.quiz.length).fill(null);
+            state.pieRevealed = Array(c.categories.length).fill(false);
+            state.pieAnswers = Array(c.pieQuiz.length).fill('');
+            state.pieStatus = Array(c.pieQuiz.length).fill(null);
+            
+            state.gameScore = c.points; 
+            updateLiveScoreBadge();
+        }
+
+        function updateLiveScoreBadge() {
+            const el = document.getElementById('live-score-badge');
+            if (el) el.innerText = state.gameScore;
+        }
+
+        function formatTally(count) {
+            if (!count || count <= 0) return '<span class="text-slate-300">-</span>';
+            let html = '<div class="inline-flex flex-wrap items-center justify-center gap-1">';
+            const groupsOf5 = Math.floor(count / 5);
+            const remainder = count % 5;
+            for (let g = 0; g < groupsOf5; g++) {
+                html += `<span class="inline-block bg-indigo-50 text-indigo-700 border border-indigo-200 px-1 py-0.5 rounded font-mono font-black text-[10px] tracking-tighter line-through decoration-rose-500 decoration-2 shadow-sm">IIII</span>`;
+            }
+            if (remainder > 0) {
+                html += `<span class="inline-block bg-slate-50 text-slate-600 border border-slate-200 px-1 py-0.5 rounded font-mono font-black text-[10px] tracking-widest shadow-sm">${'I'.repeat(remainder)}</span>`;
+            }
+            html += '</div>';
+            return html;
+        }
+
+        function renderChallenge() {
+            const c = CHALLENGES[state.currentChallengeIdx];
+            document.getElementById('challenge-enunciado').innerText = c.enunciado;
+            document.getElementById('challenge-title').innerText = c.title;
+            document.getElementById('matrix-n').innerText = "n = " + c.n;
+
+            const ws = document.getElementById('challenge-workspace');
+            ws.className = "flex-1 flex flex-col items-center w-full relative max-w-7xl mx-auto transition-all duration-500 opacity-100 scale-100";
+            
+            // Paneles izquierdos
+            document.getElementById('panel-matrix').classList.add('hidden');
+            document.getElementById('panel-quiz').classList.add('hidden');
+            document.getElementById('panel-pie').classList.add('hidden');
+
+            if(state.currentPhase === 'table') {
+                document.getElementById('panel-matrix').classList.remove('hidden');
+                renderMatrix();
+                updateBotChallengeState();
+            } else if (state.currentPhase === 'quiz') {
+                document.getElementById('panel-quiz').classList.remove('hidden');
+                renderQuiz();
+            } else if (state.currentPhase === 'pie') {
+                document.getElementById('panel-pie').classList.remove('hidden');
+                renderPieChart();
+                renderPieQuiz();
+            }
+
+            renderTable();
+        }
+
+        function renderMatrix() {
+            const c = CHALLENGES[state.currentChallengeIdx];
+            const grid = document.getElementById('matrix-grid');
+            
+            // Columnas responsivas en función de n
+            let colsClass = c.n === 50 ? 'grid-cols-5 sm:grid-cols-10' : (c.n === 25 ? 'grid-cols-5' : 'grid-cols-4 sm:grid-cols-5');
+            grid.className = `grid gap-1.5 sm:gap-2 mb-1 flex-1 content-start z-10 h-full overflow-y-auto pr-1 custom-scrollbar ${colsClass}`;
+            
+            grid.innerHTML = '';
+            c.rawData.forEach((v, i) => {
+                const btn = document.createElement('button');
+                btn.id = `grid-btn-${i}`;
+                btn.innerText = v;
+                btn.onmouseenter = () => AudioController.play('hover');
+                btn.onclick = () => handleMatrixClick(i);
+                grid.appendChild(btn);
+            });
+            updateMatrixGridClasses();
+        }
+
+        function updateBotChallengeState() {
+            if(state.currentPhase !== 'table') return;
+            const c = CHALLENGES[state.currentChallengeIdx];
+            const col = state.activeCell.c;
+            const cat = c.categories[state.activeCell.r];
+            let msg = "";
+            if (col === 'fi') msg = `¡A contar, ${state.playerName}! Haz clic en el escáner todos los datos que correspondan a '${cat.label}' para hallar la frecuencia (fi).`;
+            else if (col === 'hi') msg = `Frecuencia Relativa (hi) de ${cat.label}: Divide su frecuencia (${c.correctTable[state.activeCell.r].fi}) entre el total (n=${c.n}).`;
+            else if (col === 'p') msg = `Frecuencia Porcentual (hi%) de ${cat.label}: Multiplica la frecuencia relativa por 100.`;
+            setBotState(msg, false, false, true);
+        }
+
+        function handleMatrixClick(idx) {
+            if (state.activeCell.c !== 'fi' || state.currentPhase !== 'table') { AudioController.play('wrong'); return; }
+            if (state.foundItems.includes(idx)) return;
+            
+            const c = CHALLENGES[state.currentChallengeIdx];
+            const cat = c.categories[state.activeCell.r];
+            const targetRawVal = cat.raw;
+            
+            if (c.rawData[idx] === targetRawVal) {
+                AudioController.play('correct');
+                state.foundItems.push(idx);
+                const currentCount = state.foundItems.filter(i => c.rawData[i] === targetRawVal).length;
+                
+                if (currentCount === c.correctTable[state.activeCell.r].fi) {
+                    AudioController.play('levelUp');
+                    state.tableState[state.activeCell.r]['fi'] = currentCount;
+                    moveToNextCell();
+                }
+                updateMatrixGridClasses();
+                renderTable();
+            } else {
+                AudioController.play('wrong'); 
+                state.gameScore = Math.max(0, state.gameScore - 50);
+                updateLiveScoreBadge();
+                
+                const btn = document.getElementById(`grid-btn-${idx}`);
+                if (btn) btn.className = "min-h-[36px] sm:min-h-[44px] rounded-xl font-black text-xs sm:text-base flex items-center justify-center transition-all duration-300 select-none border-b-4 bg-rose-500 text-white border-rose-700 animate-wiggle shadow-md";
+                setTimeout(() => updateMatrixGridClasses(), 500);
+                setBotState(`¡Ups! Ese dato no corresponde a '${cat.label}'. Se descuentan 50 puntos (Te quedan: ${state.gameScore} PTS).`, true);
+            }
+        }
+
+        function updateMatrixGridClasses() {
+            const c = CHALLENGES[state.currentChallengeIdx];
+            c.rawData.forEach((v, i) => {
+                const btn = document.getElementById(`grid-btn-${i}`);
+                if(!btn) return;
+                const isFound = state.foundItems.includes(i);
+                if(isFound) {
+                    btn.className = "min-h-[36px] sm:min-h-[44px] rounded-xl font-black text-xs sm:text-base flex items-center justify-center transition-all duration-300 select-none border-b-4 bg-amber-400 text-indigo-950 border-amber-600 shadow-lg scale-105 z-10";
+                } else {
+                    btn.className = "min-h-[36px] sm:min-h-[44px] rounded-xl font-black text-xs sm:text-base flex items-center justify-center transition-all duration-300 select-none border-b-4 bg-slate-100 text-slate-700 border-slate-300 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-300 hover:-translate-y-1 hover:shadow-md active:translate-y-[2px] active:border-b-2";
+                }
+            });
+        }
+
+        function handleCellSubmit() {
+            if(state.currentPhase !== 'table' || state.inputValue === "") return;
+            const c = CHALLENGES[state.currentChallengeIdx];
+            const currentCorrectVal = c.correctTable[state.activeCell.r][state.activeCell.c];
+            
+            if (checkValueMatch(state.inputValue, currentCorrectVal)) {
+                AudioController.play('correct');
+                state.tableState[state.activeCell.r][state.activeCell.c] = currentCorrectVal;
+                setBotState(`¡Cálculo impecable, ${state.playerName}!`, false, true);
+                moveToNextCell();
+            } else {
+                AudioController.play('wrong'); 
+                state.gameScore = Math.max(0, state.gameScore - 50);
+                updateLiveScoreBadge();
+                state.cellError = `${state.activeCell.r}-${state.activeCell.c}`;
+                renderTable();
+                setTimeout(() => { state.cellError = null; renderTable(); }, 600);
+                setBotState(`¡Ups! Revisa tu cálculo. Descontamos 50 pts (Puntaje: ${state.gameScore} XP).`, true);
+            }
+        }
+
+        function moveToNextCell() {
+            const c = CHALLENGES[state.currentChallengeIdx];
+            const colsToTest = ['fi', 'hi', 'p'];
+            for (let col of colsToTest) { 
+                for (let r = 0; r < c.categories.length; r++) { 
+                    if (state.tableState[r][col] === "") { 
+                        state.activeCell = { r, c: col }; 
+                        state.inputValue = "";
+                        renderTable();
+                        updateBotChallengeState();
+                        setTimeout(()=> document.getElementById('cell-input')?.focus(), 50);
+                        return; 
+                    }
+                }
+            }
+            
+            // Si llega aquí, terminó la tabla
+            state.currentPhase = 'quiz';
+            AudioController.play('levelUp');
+            setBotState(`¡Excelente tabla, ${state.playerName}! Ahora utilízala para responder a las preguntas de análisis.`, false, true);
+            renderChallenge();
+        }
+
+        function renderTable() {
+            const c = CHALLENGES[state.currentChallengeIdx];
+            const colsDef = [
+                { key: 'fi', label: 'Frecuencia (fi)', color: 'text-indigo-600' },
+                { key: 'hi', label: 'F. Relativa (hi)', color: 'text-rose-500' },
+                { key: 'p', label: 'Porcentaje (hi%)', color: 'text-emerald-600' }
+            ];
+
+            const thead = document.getElementById('table-head');
+            thead.innerHTML = `
+                <tr class="bg-indigo-50 text-indigo-900 border-b-2 border-indigo-100 uppercase tracking-wider text-[10px] sm:text-[11px]">
+                    <th class="p-2 sm:p-2.5 font-black text-left pl-3 sm:pl-4">Datos (Categoría)</th>
+                    <th class="p-2 font-black text-amber-700">Conteo</th>
+                    ${colsDef.map(col => `<th class="p-2 font-black transition-colors ${state.activeCell.c === col.key && state.currentPhase === 'table' ? 'text-indigo-700 bg-yellow-200/70' : ''}">${col.label}</th>`).join('')}
+                </tr>
+            `;
+
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = c.categories.map((cat, r) => {
+                const currentCount = state.tableState[r]['fi'] !== "" 
+                    ? state.tableState[r]['fi'] 
+                    : state.foundItems.filter(i => c.rawData[i] === cat.raw).length;
+                
+                // Color para la categoría asociado al gráfico circular
+                const catTailwindColor = CAT_TAILWIND[r % CAT_TAILWIND.length];
+
+                return `
+                <tr class="border-b border-slate-100 transition-colors ${state.activeCell.r === r && state.currentPhase === 'table' ? 'bg-yellow-50/90' : 'hover:bg-slate-50'}">
+                    <td class="p-2 sm:p-3 font-black text-left pl-3 sm:pl-4 text-xs sm:text-sm whitespace-nowrap flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full shrink-0 ${state.currentPhase === 'pie' ? catTailwindColor.replace('text', 'bg') : 'bg-slate-200'}"></div>
+                        <span class="text-slate-700">${cat.label}</span>
+                    </td>
+                    <td class="p-1.5 sm:p-2 text-center align-middle">
+                        ${formatTally(currentCount)}
+                    </td>
+                    ${colsDef.map(col => {
+                        const isActive = state.activeCell.r === r && state.activeCell.c === col.key && state.currentPhase === 'table';
+                        const isError = state.cellError === `${r}-${col.key}`;
+                        const val = state.tableState[r][col.key];
+                        const isFilled = val !== "";
+                        let displayVal = val;
+                        if (isActive && col.key === 'fi') displayVal = currentCount;
+                        
+                        if (isActive) {
+                            return `
+                            <td class="p-1 relative">
+                                <div class="p-1 h-full w-full flex items-center justify-center gap-1.5 ${isError ? 'animate-wiggle' : ''}">
+                                    ${col.key === 'fi' 
+                                        ? `<div class="w-9 h-8 bg-gradient-to-br from-amber-400 to-orange-500 text-white rounded-xl font-black text-sm flex items-center justify-center shadow-md animate-jellyPop">${displayVal}</div>`
+                                        : `<input id="cell-input" type="text" value="${state.inputValue}" oninput="AudioController.play('type'); state.inputValue=this.value" onkeydown="if(event.key==='Enter') handleCellSubmit()" class="w-full max-w-[60px] bg-white border-b-[3px] rounded-xl font-black text-center py-1 text-sm outline-none transition-all shadow-inner ${isError ? 'border-rose-500 text-rose-500 bg-rose-50' : 'border-indigo-300 focus:border-indigo-600 text-indigo-700'}" placeholder="?">
+                                           <button onclick="handleCellSubmit()" class="bg-indigo-600 text-white p-1 rounded-lg border-b-[3px] border-indigo-800 active:border-b-0 active:translate-y-[3px] shadow hover:bg-indigo-500"><i data-lucide="check" class="w-3.5 h-3.5"></i></button>`
+                                    }
+                                </div>
+                            </td>`;
+                        } else {
+                            return `<td class="p-1.5 relative"><div class="font-black text-xs sm:text-sm ${isFilled ? col.color : 'text-slate-300'}">${isFilled ? val + (col.key==='p' ?'%' : '') : "-"}</div></td>`;
+                        }
+                    }).join('')}
+                </tr>`;
+            }).join('');
+
+            const tfoot = document.getElementById('table-foot');
+            tfoot.innerHTML = `
+                <tr class="bg-slate-800 font-black text-white text-[10px] sm:text-xs">
+                    <td class="p-2 sm:p-2.5 text-right text-yellow-300 pr-4" colspan="2">TOTAL</td>
+                    <td class="p-2 sm:p-2.5 text-indigo-300">${c.n}</td>
+                    <td class="p-2 sm:p-2.5 text-rose-300">1.00</td>
+                    <td class="p-2 sm:p-2.5 text-emerald-300">100%</td>
+                </tr>`;
+            
+            safeIcons();
+        }
+
+        // ==========================================
+        // ETAPA 2: CUESTIONARIO DE TABLA
+        // ==========================================
+        function renderQuiz() {
+            const c = CHALLENGES[state.currentChallengeIdx];
+            const list = document.getElementById('quiz-list');
+            list.innerHTML = c.quiz.map((q, idx) => {
+                const isCorrect = state.quizStatus[idx] === 'correct';
+                const isWrong = state.quizStatus[idx] === 'wrong';
+                return `
+                <div class="p-3 sm:p-4 rounded-2xl border-2 transition-colors shadow-sm ${isCorrect ? 'bg-emerald-50 border-emerald-300' : isWrong ? 'bg-rose-50 border-rose-300 animate-wiggle' : 'bg-slate-50 border-slate-200'}">
+                    <p class="text-xs sm:text-sm font-extrabold mb-2.5 flex gap-2 leading-snug ${isCorrect ? 'text-emerald-800' : 'text-slate-700'}">
+                        <span class="text-indigo-500 shrink-0 font-black">${idx + 1}.</span> ${q.q}
+                    </p>
+                    <div class="flex gap-2">
+                        <input type="text" value="${state.quizAnswers[idx]}" oninput="AudioController.play('type'); state.quizAnswers[${idx}]=this.value" onkeydown="if(event.key==='Enter') handleQuizCheck(${idx})" ${isCorrect ? 'disabled' : ''} placeholder="Tu respuesta..."
+                            class="flex-1 bg-white border-b-[3px] rounded-xl py-1.5 px-3 text-sm sm:text-base font-black text-center focus:outline-none transition-all ${isCorrect ? 'border-emerald-400 text-emerald-600' : isWrong ? 'border-rose-400 text-rose-500' : 'border-slate-300 focus:border-indigo-500 text-indigo-700'}">
+                        ${!isCorrect ? 
+                            `<button type="button" onclick="handleQuizCheck(${idx})" onmouseenter="AudioController.play('hover')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-1.5 rounded-xl font-black transition-all border-b-[3px] border-indigo-800 active:border-b-0 active:translate-y-[3px] shadow uppercase text-[10px] sm:text-xs cursor-pointer">Validar</button>` 
+                            : `<div class="bg-emerald-100 text-emerald-600 px-4 py-1.5 rounded-xl font-black flex items-center justify-center border-2 border-emerald-300">✓</div>`
+                        }
+                    </div>
+                </div>`;
+            }).join('');
+            safeIcons();
+        }
+
+        function handleQuizCheck(idx) {
+            const c = CHALLENGES[state.currentChallengeIdx];
+            if(state.quizAnswers[idx] === "") return;
+            const isCorrect = checkValueMatch(state.quizAnswers[idx], c.quiz[idx].a);
+            
+            if (isCorrect) {
+                AudioController.play('correct'); 
+                state.quizStatus[idx] = 'correct'; 
+                renderQuiz();
+                
+                if (state.quizStatus.every(s => s === 'correct')) {
+                    setTimeout(() => {
+                        state.currentPhase = 'pie';
+                        AudioController.play('levelUp');
+                        setBotState(`¡Respuestas correctas! Ahora vamos a representar estos datos en un gráfico circular.`, false, true);
+                        renderChallenge();
+                    }, 600);
+                } else {
+                    setBotState(`¡Muy bien, ${state.playerName}! Sigue analizando la tabla.`, false, true);
+                }
+            } else {
+                AudioController.play('wrong'); 
+                state.gameScore = Math.max(0, state.gameScore - 50);
+                updateLiveScoreBadge();
+                state.quizStatus[idx] = 'wrong'; 
+                renderQuiz();
+                setBotState(`¡Cuidado! Revisa la tabla. Te descuento 50 pts (Puntaje: ${state.gameScore} XP).`, true);
+                setTimeout(() => { state.quizStatus[idx] = null; renderQuiz(); }, 700);
+            }
+        }
+
+        // ==========================================
+        // ETAPA 3: GRÁFICO CIRCULAR DINÁMICO
+        // ==========================================
+        function renderPieChart() {
+            const c = CHALLENGES[state.currentChallengeIdx];
+            const pieEl = document.getElementById('pie-visualizer');
+            
+            let gradientParts = [];
+            let currentAngle = 0;
+            
+            // Construimos el CSS conic-gradient usando los ángulos exactos
+            c.angles.forEach((angle, idx) => {
+                let colorHex = state.pieRevealed[idx] ? CAT_COLORS[idx % CAT_COLORS.length] : '#e2e8f0'; // slate-200
+                gradientParts.push(`${colorHex} ${currentAngle}deg ${currentAngle + angle}deg`);
+                currentAngle += angle;
+            });
+            
+            // Aplicar gradient
+            pieEl.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+            
+            // Aseguramos que la tabla actualice los colores de los puntitos
+            renderTable();
+        }
+
+        function renderPieQuiz() {
+            const c = CHALLENGES[state.currentChallengeIdx];
+            const list = document.getElementById('pie-quiz-list');
+            list.innerHTML = c.pieQuiz.map((q, idx) => {
+                const isCorrect = state.pieStatus[idx] === 'correct';
+                const isWrong = state.pieStatus[idx] === 'wrong';
+                return `
+                <div class="p-3 sm:p-4 rounded-2xl border-2 transition-colors shadow-sm ${isCorrect ? 'bg-emerald-50 border-emerald-300' : isWrong ? 'bg-rose-50 border-rose-300 animate-wiggle' : 'bg-slate-50 border-slate-200'}">
+                    <p class="text-xs sm:text-sm font-extrabold mb-2.5 flex gap-2 leading-snug ${isCorrect ? 'text-emerald-800' : 'text-slate-700'}">
+                        <span class="text-emerald-600 shrink-0 font-black">🎯</span> ${q.q}
+                    </p>
+                    <div class="flex gap-2">
+                        <input type="text" value="${state.pieAnswers[idx]}" oninput="AudioController.play('type'); state.pieAnswers[${idx}]=this.value" onkeydown="if(event.key==='Enter') handlePieCheck(${idx})" ${isCorrect ? 'disabled' : ''} placeholder="Ángulo (°)"
+                            class="flex-1 bg-white border-b-[3px] rounded-xl py-1.5 px-3 text-sm sm:text-base font-black text-center focus:outline-none transition-all ${isCorrect ? 'border-emerald-400 text-emerald-600' : isWrong ? 'border-rose-400 text-rose-500' : 'border-slate-300 focus:border-indigo-500 text-indigo-700'}">
+                        ${!isCorrect ? 
+                            `<button type="button" onclick="handlePieCheck(${idx})" onmouseenter="AudioController.play('hover')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-1.5 rounded-xl font-black transition-all border-b-[3px] border-indigo-800 active:border-b-0 active:translate-y-[3px] shadow uppercase text-[10px] sm:text-xs cursor-pointer">Medir</button>` 
+                            : `<div class="bg-emerald-100 text-emerald-600 px-4 py-1.5 rounded-xl font-black flex items-center justify-center border-2 border-emerald-300">✓</div>`
+                        }
+                    </div>
+                </div>`;
+            }).join('');
+            safeIcons();
+        }
+
+        function handlePieCheck(idx) {
+            const c = CHALLENGES[state.currentChallengeIdx];
+            if(state.pieAnswers[idx] === "") return;
+            const targetQ = c.pieQuiz[idx];
+            const isCorrect = checkValueMatch(state.pieAnswers[idx], targetQ.a);
+            
+            if (isCorrect) {
+                AudioController.play('correct'); 
+                state.pieStatus[idx] = 'correct'; 
+                // Revelar color en el pie chart
+                state.pieRevealed[targetQ.catIdx] = true;
+                
+                renderPieChart();
+                renderPieQuiz();
+                
+                if (state.pieStatus.every(s => s === 'correct')) {
+                    // Revelar el resto del gráfico final
+                    state.pieRevealed = state.pieRevealed.map(() => true);
+                    renderPieChart();
+                    setTimeout(() => completeLevel(), 800);
+                } else {
+                    setBotState(`¡Exacto! El sector aparece en el gráfico. Recuerda: Multiplica la frecuencia relativa (hi) por 360°.`, false, true);
+                }
+            } else {
+                AudioController.play('wrong'); 
+                state.gameScore = Math.max(0, state.gameScore - 50);
+                updateLiveScoreBadge();
+                state.pieStatus[idx] = 'wrong'; 
+                renderPieQuiz();
+                setBotState(`¡Ángulo incorrecto! -50 pts (Puntaje: ${state.gameScore} XP). Tip: ángulo = hi × 360.`, true);
+                setTimeout(() => { state.pieStatus[idx] = null; renderPieQuiz(); }, 700);
+            }
+        }
+
+        // ==========================================
+        // FINALIZACIÓN DE NIVEL Y REPORTES
+        // ==========================================
+        function completeLevel() {
+            AudioController.play('win');
+            const ch = CHALLENGES[state.currentChallengeIdx];
+            
+            // Guardar puntaje de la partida
+            state.gameScores[ch.id] = { player: state.playerName, score: state.gameScore };
+            
+            if (!state.completedChallenges.includes(ch.id)) state.completedChallenges.push(ch.id);
+
+            const isPerfect = state.gameScore === ch.points;
+            
+            document.getElementById('challenge-workspace').className = "flex-1 flex flex-col items-center w-full relative max-w-7xl mx-auto transition-all duration-500 opacity-20 blur pointer-events-none";
+            document.getElementById('overlay-complete').classList.remove('hidden');
+            
+            const modalEl = document.getElementById('complete-modal');
+            const glowEl = document.getElementById('complete-glow-color');
+            const badgeEl = document.getElementById('complete-badge');
+            const titleEl = document.getElementById('complete-title');
+            const headingEl = document.getElementById('complete-student-heading');
+            const descEl = document.getElementById('complete-desc');
+            const scoreBoxEl = document.getElementById('complete-score-box');
+            const btnEl = document.getElementById('complete-btn');
+
+            document.getElementById('complete-name').innerText = state.playerName;
+            document.getElementById('complete-score').innerText = `${state.gameScore} PUNTOS`;
+
+            if (isPerfect) {
+                modalEl.className = "w-full max-w-2xl p-6 sm:p-10 rounded-[3rem] flex flex-col items-center justify-center text-center animate-jellyPop overflow-y-auto shadow-2xl relative z-10 metallic-gold";
+                glowEl.className = "w-full h-full bg-yellow-400/25 animate-ping rounded-full blur-3xl max-w-xl max-h-xl";
+                badgeEl.className = "relative z-10 text-yellow-900 bg-white/50 border-yellow-200 px-6 py-2 rounded-full mb-4 border-2 shadow-sm backdrop-blur-sm";
+                titleEl.innerHTML = '<i data-lucide="award" class="w-6 h-6"></i> ¡PUNTAJE PERFECTO!';
+                titleEl.className = "font-black uppercase tracking-widest flex items-center justify-center gap-2 text-base sm:text-xl metallic-text-gold text-yellow-900";
+                headingEl.className = "relative z-10 text-3xl sm:text-5xl font-black mb-2 leading-tight uppercase metallic-text-gold text-yellow-950";
+                descEl.innerText = `¡Impecable, ${state.playerName}! Resolviste todo sin ningún error.`;
+                descEl.className = "relative z-10 text-sm sm:text-lg font-extrabold mb-6 uppercase tracking-wider text-yellow-900/90";
+                scoreBoxEl.className = "relative z-10 px-8 py-4 rounded-[2rem] border-b-[6px] mb-8 shadow-2xl transform rotate-1 bg-white/70 border-white text-yellow-900";
+                btnEl.className = "relative z-10 px-8 py-4 font-black text-lg sm:text-xl rounded-2xl transition-all flex items-center gap-3 border-b-[6px] shadow-2xl active:border-b-0 active:translate-y-[6px] uppercase tracking-wider hover:brightness-110 bg-slate-900 border-black text-yellow-400";
+                setBotState(`¡Impresionante, ${state.playerName}! ¡Terminaste todo el proceso estadístico sin un solo error!`, false, true);
+            } else {
+                modalEl.className = "w-full max-w-2xl p-6 sm:p-10 rounded-[3rem] flex flex-col items-center justify-center text-center animate-jellyPop overflow-y-auto shadow-2xl relative z-10 metallic-celeste";
+                glowEl.className = "w-full h-full bg-sky-400/25 animate-ping rounded-full blur-3xl max-w-xl max-h-xl";
+                badgeEl.className = "relative z-10 text-sky-900 bg-white/50 border-sky-200 px-6 py-2 rounded-full mb-4 border-2 shadow-sm backdrop-blur-sm";
+                titleEl.innerHTML = '<i data-lucide="sparkles" class="w-6 h-6"></i> ¡BUEN ESFUERZO!';
+                titleEl.className = "font-black uppercase tracking-widest flex items-center justify-center gap-2 text-base sm:text-xl metallic-text-celeste text-sky-900";
+                headingEl.className = "relative z-10 text-3xl sm:text-5xl font-black mb-2 leading-tight uppercase metallic-text-celeste text-sky-950";
+                descEl.innerText = `¡Vamos, tú puedes, inténtalo! Lo importante es seguir aprendiendo, ${state.playerName}.`;
+                descEl.className = "relative z-10 text-sm sm:text-lg font-extrabold mb-6 uppercase tracking-wider text-sky-900/90";
+                scoreBoxEl.className = "relative z-10 px-8 py-4 rounded-[2rem] border-b-[6px] mb-8 shadow-2xl transform rotate-1 bg-white/70 border-white text-sky-900";
+                btnEl.className = "relative z-10 px-8 py-4 font-black text-lg sm:text-xl rounded-2xl transition-all flex items-center gap-3 border-b-[6px] shadow-2xl active:border-b-0 active:translate-y-[6px] uppercase tracking-wider hover:brightness-110 bg-slate-900 border-black text-sky-400";
+                setBotState(`¡Excelente trabajo, ${state.playerName}! Has completado el gráfico circular. ¡Sigue practicando!`, false, true);
+            }
+
+            triggerConfetti();
+            safeIcons();
+        }
+
+        function showResult() {
+            AudioController.play('win');
+            const totalScore = Object.values(state.gameScores).reduce((acc, curr) => acc + curr.score, 0);
+
+            document.getElementById('result-score').innerText = totalScore;
+            triggerConfetti();
+            setBotState(`¡Aquí está el consolidado global de todos los estudiantes! Se han logrado grandes aprendizajes matemáticos.`, false, true);
+            changeView('result');
+        }
+
+        function resetGame() {
+            AudioController.play('swoosh');
+            state.completedChallenges = [];
+            state.gameScores = {};
+            state.playerName = '';
+            document.getElementById('confetti-container').innerHTML = '';
+            changeView('map');
+            setBotState("¡Hola de nuevo! Todos los ejercicios han sido reiniciados. Pueden volver a participar.", false, false, true);
+        }
+
+        function downloadReport() {
+            AudioController.play('correct');
+            const MAX_TOTAL = 8000;
+            const totalScore = Object.values(state.gameScores).reduce((acc, curr) => acc + curr.score, 0);
+            const date = new Date().toLocaleDateString('es-PE', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            
+            let report = `=======================================\n      REPORTE DE ESTADÍSTICA INTERACTIVA   \n          TuProfe20 MathLab            \n=======================================\n\nFECHA: ${date}\n\n=======================================\nPUNTAJE GLOBAL: ${totalScore} / ${MAX_TOTAL} PUNTOS\n=======================================\n\nDETALLE POR ACTIVIDAD:\n---------------------------------------\n`;
+            
+            CHALLENGES.forEach((t, i) => { 
+                const scData = state.gameScores[t.id];
+                if (scData) {
+                    report += `Actividad ${i + 1}: ${t.title}\nCompletado por: ${scData.player}\nPuntaje: ${scData.score} / ${t.points}\n\n`; 
+                } else {
+                    report += `Actividad ${i + 1}: ${t.title}\nEstado: Pendiente\n\n`;
+                }
+            });
+            report += `---------------------------------------\n¡Excelente participación en clase!\n`;
+            
+            const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob); 
+            const link = document.createElement('a');
+            link.href = url; 
+            link.download = `Reporte_Estadistica_Global.txt`;
+            document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url);
+        }
+
+        function triggerConfetti() {
+            const colors = ['#fde047', '#60a5fa', '#f472b6', '#34d399', '#a78bfa', '#ff5722'];
+            const container = document.getElementById('confetti-container');
+            container.innerHTML = '';
+            for(let i=0; i<140; i++) {
+                const el = document.createElement('div');
+                const left = `${50 + (Math.random() * 20 - 10)}%`;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const tx = `${(Math.random() - 0.5) * 850}px`;
+                const ty = `${(Math.random() - 1) * 850}px`;
+                const rot = `${Math.random() * 720}deg`;
+                const delay = `${Math.random() * 0.2}s`;
+                
+                el.className = "absolute w-4 h-4 sm:w-5 sm:h-5 rounded-full animate-confettiExplosion shadow-sm";
+                el.style.backgroundColor = color;
+                el.style.setProperty('--tx', tx);
+                el.style.setProperty('--ty', ty);
+                el.style.setProperty('--rot', rot);
+                el.style.animationDelay = delay;
+                el.style.left = left;
+                el.style.top = '50%';
+                container.appendChild(el);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initFloatingBackground();
+            renderMap();
+            safeIcons();
+        });
+    </script>
+</body>
+</html>
